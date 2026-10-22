@@ -1,0 +1,20 @@
+{% extends "fragments/layout.njk" %}
+{% block body %}<body>
+  <img src="/resources/images/pets.png" />
+  <!-- Title: Something happened -->
+  <h2>{{ t('somethingHappened') }}</h2>
+
+  <!-- Status-specific error message -->
+  <p>
+{% if status == 404 %}
+    <span>{{ t('error.404') }}</span>
+{% elif status == 500 %}
+    <span>{{ t('error.500') }}</span>
+{% else %}
+    <span>{{ t('error.general') }}</span>
+{% endif %}
+  </p>
+
+  <!-- Exception message (for developers) -->
+  <p></p>
+</body>{% endblock %}

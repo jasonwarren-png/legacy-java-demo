@@ -1,0 +1,78 @@
+{% extends "fragments/layout.njk" %}
+{% block body %}<body>
+
+  <h2>{{ t('owners') }}</h2>
+
+  <table id="owners" class="table table-striped">
+    <thead>
+      <tr>
+        <th style="width: 150px;">{{ t('name') }}</th>
+        <th style="width: 200px;">{{ t('address') }}</th>
+        <th>{{ t('city') }}</th>
+        <th style="width: 120px">{{ t('telephone') }}</th>
+        <th>{{ t('pets') }}</th>
+      </tr>
+    </thead>
+    <tbody>
+{% for owner in listOwners %}
+      <tr>
+        <td>
+          {#- The stray </a> reproduces the Thymeleaf template's output. #}
+          <a href="/owners/{{ owner.id }}" >{{ owner.firstName + ' ' + owner.lastName }}</a></a>
+        </td>
+        <td >{{ owner.address }}</td>
+        <td >{{ owner.city }}</td>
+        <td >{{ owner.telephone }}</td>
+        <td><span >{% for pet in owner.pets %}{{ pet.name if pet.name != null else '<null>' }}{% if not loop.last %}, {% endif %}{% endfor %}</span></td>
+      </tr>
+{% endfor %}
+    </tbody>
+  </table>
+{% if totalPages > 1 %}
+  <div>
+    <span>{{ t('pages') }}</span>
+    <span>[</span>
+{% for i in range(1, totalPages + 1) %}
+    <span>
+{% if currentPage != i %}
+      <a href="/owners?page={{ i }}">{{ i }}</a>
+{% else %}
+      <span>{{ i }}</span>
+{% endif %}
+    </span>
+{% endfor %}
+    <span>]&nbsp;</span>
+    <span>
+{% if currentPage > 1 %}
+      <a href="/owners?page=1" title="{{ t('first') }}" class="fa fa-fast-backward"></a>
+{% else %}
+      <span title="{{ t('first') }}" class="fa fa-fast-backward"></span>
+{% endif %}
+    </span>
+    <span>
+{% if currentPage > 1 %}
+      <a href="/owners?page={{ currentPage - 1 }}" title="{{ t('previous') }}"
+        class="fa fa-step-backward"></a>
+{% else %}
+      <span title="{{ t('previous') }}" class="fa fa-step-backward"></span>
+{% endif %}
+    </span>
+    <span>
+{% if currentPage < totalPages %}
+      <a href="/owners?page={{ currentPage + 1 }}" title="{{ t('next') }}"
+        class="fa fa-step-forward"></a>
+{% else %}
+      <span title="{{ t('next') }}" class="fa fa-step-forward"></span>
+{% endif %}
+    </span>
+    <span>
+{% if currentPage < totalPages %}
+      <a href="/owners?page={{ totalPages }}" title="{{ t('last') }}"
+        class="fa fa-fast-forward"></a>
+{% else %}
+      <span title="{{ t('last') }}" class="fa fa-fast-forward"></span>
+{% endif %}
+    </span>
+  </div>
+{% endif %}
+</body>{% endblock %}

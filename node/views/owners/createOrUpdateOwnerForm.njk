@@ -1,0 +1,16 @@
+{% extends "fragments/layout.njk" %}
+{% from "fragments/inputField.njk" import input %}
+{% block body %}<body>
+
+  <h2>{{ t('owner') }}</h2>
+  <form class="form-horizontal" id="add-owner-form" method="post">
+    <div class="form-group has-feedback">
+{% for f in fields %}{{ input(t(f.name), f.name, f.value, f.errors) }}{% endfor %}
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button class="btn btn-primary" type="submit">{{ t('addOwner') if isNew else t('updateOwner') }}</button>
+      </div>
+    </div>
+  </form>
+</body>{% endblock %}

@@ -1,0 +1,17 @@
+{#- Port of templates/fragments/inputField.html (text inputs). Errors are HTML-escaped and joined with <br />. -#}
+{% macro input(label, name, value, errors) %}
+      <div class="form-group{{ ' has-error' if errors.length }}">
+        <label for="{{ name }}" class="col-sm-2 control-label">{{ label }}</label>
+        <div class="col-sm-10">
+          <div>
+            <input class="form-control" type="text" id="{{ name }}" name="{{ name }}" value="{{ value | fieldValue }}" />
+          </div>
+{% if not errors.length %}
+          <span class="fa fa-ok form-control-feedback" aria-hidden="true"></span>
+{% else %}
+            <span class="fa fa-remove form-control-feedback" aria-hidden="true"></span>
+            <span class="help-inline">{% for e in errors %}{{ e }}{% if not loop.last %}<br />{% endif %}{% endfor %}</span>
+{% endif %}
+        </div>
+      </div>
+{% endmacro %}
