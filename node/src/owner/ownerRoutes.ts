@@ -31,7 +31,8 @@ function formModel(owner: Owner, errors?: Errors) {
 /** Port of OwnerController. */
 export function ownerRoutes(owners: OwnerRepository): Router {
 	const router = Router({ strict: true });
-	router.use(express.urlencoded({ extended: false }));
+	// Parse form bodies only on these routes: requests passed on to the legacy app must keep their body stream.
+	const formBody = express.urlencoded({ extended: false });
 
 	/** @ModelAttribute("owner"): resolved before every handler that has an {ownerId}. */
 	async function findOwner(rawOwnerId: string | undefined): Promise<Owner> {
@@ -50,7 +51,7 @@ export function ownerRoutes(owners: OwnerRepository): Router {
 		render(res, VIEWS_OWNER_CREATE_OR_UPDATE_FORM, formModel(newOwner()));
 	});
 
-	router.post('/owners/new', asyncHandler(async (req, res) => {
+	router.post('/owners/new', formBody, asyncHandler(async (req, res) => {
 		const owner = newOwner();
 		bindOwner(owner, req);
 		const errors = new Errors('owner', res.locals.locale);
@@ -105,7 +106,7 @@ export function ownerRoutes(owners: OwnerRepository): Router {
 		render(res, VIEWS_OWNER_CREATE_OR_UPDATE_FORM, formModel(owner));
 	}));
 
-	router.post('/owners/:ownerId/edit', asyncHandler(async (req, res) => {
+	router.post('/owners/:ownerId/edit', formBody, asyncHandler(async (req, res) => {
 		const rawOwnerId = req.params.ownerId as string;
 		const owner = await findOwner(rawOwnerId);
 		const ownerId = intParam(rawOwnerId, 'ownerId');

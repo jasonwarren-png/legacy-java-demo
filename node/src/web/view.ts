@@ -44,9 +44,17 @@ declare module 'express-serve-static-core' {
 }
 
 /** LocaleChangeInterceptor(paramName = "lang") + SessionLocaleResolver(default = ENGLISH). */
+const LOCALE_PATTERN = /^[A-Za-z]{1,8}(?:[_-][A-Za-z0-9]{1,8})*$/;
+
 export const localeMiddleware: RequestHandler = (req, res, next) => {
+	res.locals.locale = (req.session.locale && parseLocale(req.session.locale)) || ENGLISH;
 	if (req.query.lang !== undefined) {
-		const value = firstValue(req.query.lang) ?? '';
+		const value = (firstValue(req.query.lang) ?? '').trim();
+		if (value !== '' && !LOCALE_PATTERN.test(value)) {
+			// Spring's LocaleChangeInterceptor throws for an invalid locale (500) and leaves the session unchanged.
+			next(new Error(`Invalid locale value '${value}'`));
+			return;
+		}
 		const locale = parseLocale(value);
 		if (locale) {
 			req.session.locale = languageTag(locale);
