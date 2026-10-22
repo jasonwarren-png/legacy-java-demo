@@ -1,0 +1,49 @@
+{
+  "name": "petclinic-node",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Node.js (TypeScript + Express) port of Spring PetClinic",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/server.js",
+    "dev": "tsx watch src/server.ts",
+    "typecheck": "tsc -p tsconfig.test.json",
+    "lint": "eslint .",
+    "test": "vitest run --dir test",
+    "contract": "vitest run --dir contract",
+    "contract:run": "bash contract/run-contract.sh"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.11.1",
+    "bootstrap": "^5.3.8",
+    "express": "^4.22.3",
+    "express-session": "^1.19.0",
+    "font-awesome": "^4.7.0",
+    "http-proxy-middleware": "^3.0.7",
+    "kysely": "^0.29.7",
+    "mysql2": "^3.24.6",
+    "nunjucks": "^3.2.4",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/express": "^4.17.25",
+    "@types/express-session": "^1.19.0",
+    "@types/node": "^20.19.43",
+    "@types/nunjucks": "^3.2.6",
+    "@types/pg": "^8.23.1",
+    "@types/supertest": "^7.2.1",
+    "eslint": "^9.39.5",
+    "globals": "^17.13.0",
+    "supertest": "^7.3.1",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.72.0",
+    "vitest": "^3.2.7"
+  }
+}

@@ -1,0 +1,5 @@
+node_modules/
+dist/
+contract/results/*.log
+contract/results/*.xml
+contract/results/*-mismatches.json

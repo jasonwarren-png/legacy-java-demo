@@ -1,0 +1,96 @@
+{% extends "fragments/layout.njk" %}
+{% block body %}<body>
+
+  <h2>{{ t('ownerInformation') }}</h2>
+
+{% if flash.message %}
+  <div class="alert alert-success" id="success-message">
+    <span>{{ flash.message }}</span>
+  </div>
+{% endif %}
+
+{% if flash.error %}
+  <div class="alert alert-danger" id="error-message">
+    <span>{{ flash.error }}</span>
+  </div>
+{% endif %}
+
+  <table class="table table-striped">
+    <tr>
+      <th>{{ t('name') }}</th>
+      <td><b>{{ owner.firstName + ' ' + owner.lastName }}</b></td>
+    </tr>
+    <tr>
+      <th>{{ t('address') }}</th>
+      <td>{{ owner.address }}</td>
+    </tr>
+    <tr>
+      <th>{{ t('city') }}</th>
+      <td>{{ owner.city }}</td>
+    </tr>
+    <tr>
+      <th>{{ t('telephone') }}</th>
+      <td>{{ owner.telephone }}</td>
+    </tr>
+  </table>
+
+  <a href="{{ owner.id }}/edit" class="btn btn-primary">{{ t('editOwner') }}</a>
+  <a href="{{ owner.id }}/pets/new" class="btn btn-primary">{{ t('addNewPet') }}</a>
+
+  <br />
+  <br />
+  <br />
+  <h2>{{ t('petsAndVisits') }}</h2>
+
+  <table class="table table-striped">
+{% for pet in owner.pets %}
+
+    <tr>
+      <td valign="top">
+        <dl class="dl-horizontal">
+          <dt>{{ t('name') }}</dt>
+          <dd>{{ pet.name }}</dd>
+          <dt>{{ t('birthDate') }}</dt>
+          <dd>{{ pet.birthDate }}</dd>
+          <dt>{{ t('type') }}</dt>
+          <dd>{{ pet.type.name if (pet.type and pet.type.name != null) else ('<null>' if pet.type else '') }}</dd>
+        </dl>
+      </td>
+      <td valign="top">
+        <table class="table-condensed">
+          <thead>
+            <tr>
+              <th>{{ t('visitDate') }}</th>
+              <th>{{ t('description') }}</th>
+            </tr>
+          </thead>
+{% for visit in pet.visits %}
+          <tr>
+            <td>{{ visit.date }}</td>
+            <td>{{ visit.description }}</td>
+          </tr>
+{% endfor %}
+          <tr>
+            <td><a href="{{ owner.id }}/pets/{{ pet.id }}/edit">{{ t('editPet') }}</a></td>
+            <td><a href="{{ owner.id }}/pets/{{ pet.id }}/visits/new">{{ t('addVisit') }}</a></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+{% endfor %}
+
+  </table>
+  <script>
+    // Function to hide the success and error messages after 3 seconds
+    function hideMessages() {
+      setTimeout(function () {
+        document.getElementById("success-message").style.display = "none";
+        document.getElementById("error-message").style.display = "none";
+      }, 3000); // 3000 milliseconds (3 seconds)
+    }
+
+    // Call the function to hide messages
+    hideMessages();
+  </script>
+
+</body>{% endblock %}
