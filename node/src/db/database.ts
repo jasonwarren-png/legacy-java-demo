@@ -21,6 +21,28 @@ export interface Db {
 
 const PG_DATE_OID = 1082;
 
+/** SQL LIKE pattern (with optional ESCAPE character) as a case-insensitive, Unicode-aware RegExp. */
+export function likeToRegExp(pattern: string, escape?: string): RegExp {
+	let source = '';
+	const chars = [...pattern];
+	for (let i = 0; i < chars.length; i++) {
+		const c = chars[i] as string;
+		if (escape !== undefined && c === escape && i + 1 < chars.length) {
+			source += (chars[++i] as string).replace(/[.*+?^${}()|[\]\\/]/g, '\\$&');
+		}
+		else if (c === '%') {
+			source += '[\\s\\S]*';
+		}
+		else if (c === '_') {
+			source += '[\\s\\S]';
+		}
+		else {
+			source += c.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&');
+		}
+	}
+	return new RegExp(`^${source}$`, 'iu');
+}
+
 /** POSTGRES_USER/PASS (or MYSQL_*) apply unless the URL already carries credentials, as with the Spring datasource. */
 function withCredentials(url: string, credentials: { user: string; password: string }): string {
 	const parsed = new URL(url);
@@ -36,6 +58,9 @@ export function createDb(config: Config): Db {
 	if (config.db === 'sqlite') {
 		const sqlite = new SQLite(':memory:');
 		sqlite.pragma('foreign_keys = ON');
+		// H2's VARCHAR_IGNORECASE matches case-insensitively for all letters; SQLite's built-in LIKE only folds ASCII.
+		sqlite.function('like', { deterministic: true, varargs: true }, (pattern: unknown, value: unknown, escape?: unknown) =>
+			pattern == null || value == null ? null : Number(likeToRegExp(String(pattern), escape == null ? undefined : String(escape)).test(String(value))));
 		kysely = new Kysely<Database>({ dialect: new SqliteDialect({ database: sqlite }) });
 	}
 	else if (config.db === 'postgres') {

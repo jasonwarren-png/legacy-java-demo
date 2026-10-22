@@ -14,6 +14,10 @@ export interface Config {
 	/** Base URL of the legacy Spring app; routes not yet ported are proxied there (strangler pattern). */
 	legacyUpstreamUrl?: string;
 	sessionSecret?: string;
+	/** Express `trust proxy` setting; off by default, like Tomcat without RemoteIpValve. */
+	trustProxy: boolean;
+	/** Adds `Secure` to the session cookie (server.servlet.session.cookie.secure). */
+	sessionCookieSecure: boolean;
 }
 
 function dbProfile(value: string | undefined): DbProfile {
@@ -45,5 +49,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
 		},
 		legacyUpstreamUrl: env.LEGACY_UPSTREAM_URL || undefined,
 		sessionSecret: env.SESSION_SECRET || undefined,
+		trustProxy: env.TRUST_PROXY === 'true',
+		sessionCookieSecure: env.SESSION_COOKIE_SECURE === 'true',
 	};
 }

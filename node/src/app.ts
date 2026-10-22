@@ -9,11 +9,14 @@ import type { Db } from './db/database.js';
 import { OwnerRepository } from './owner/ownerRepository.js';
 import { ownerRoutes } from './owner/ownerRoutes.js';
 import { errorHandler, notFoundHandler } from './web/errorHandling.js';
+import { IdleTimeoutMemoryStore } from './web/sessionStore.js';
 import { flashMiddleware, localeMiddleware, stripMatrixParams } from './web/view.js';
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const staticDir = resolve(projectRoot, '../src/main/resources/static');
 const STATIC_MAX_AGE_SECONDS = 12 * 60 * 60;
+/** Tomcat's default session timeout (server.servlet.session.timeout=30m). */
+const SESSION_IDLE_TIMEOUT_MS = 30 * 60 * 1000;
 
 export interface AppDependencies {
 	ownerRepository?: OwnerRepository;
@@ -24,7 +27,7 @@ export function createApp(config: Config, db: Db, deps: AppDependencies = {}): E
 	app.disable('x-powered-by');
 	app.set('etag', false);
 	app.set('query parser', 'simple');
-	app.set('trust proxy', true);
+	app.set('trust proxy', config.trustProxy);
 	app.set('strict routing', true);
 
 	app.use(stripMatrixParams);
@@ -42,7 +45,8 @@ export function createApp(config: Config, db: Db, deps: AppDependencies = {}): E
 		secret: config.sessionSecret ?? randomBytes(32).toString('hex'),
 		resave: false,
 		saveUninitialized: false,
-		cookie: { httpOnly: true, path: '/' },
+		cookie: { httpOnly: true, path: '/', secure: config.sessionCookieSecure },
+		store: new IdleTimeoutMemoryStore(SESSION_IDLE_TIMEOUT_MS),
 	}));
 	app.use(localeMiddleware);
 	app.use(flashMiddleware);

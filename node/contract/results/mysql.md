@@ -1,6 +1,6 @@
 # Owners contract results: mysql
 
-129/129 scenarios identical (Java http://localhost:18080 vs Node http://localhost:18081).
+130/130 scenarios identical (Java http://localhost:18080 vs Node http://localhost:18081).
 
 | # | Scenario | Request | Java | Node | Result |
 |---|---|---|---|---|---|
@@ -104,32 +104,33 @@
 | 98 | create owner 14 with non-ASCII names | `POST /owners/new` | 302 | 302 | match |
 | 99 | owner 14 details | `GET /owners/14` | 200 | 200 | match |
 | 100 | search exact-case "Ü" | `GET /owners?lastName=%C3%9C` | 302 | 302 | match |
-| 101 | create owner 15 "Davis" (third Davis) | `POST /owners/new` | 302 | 302 | match |
-| 102 | search Davis now lists 3 | `GET /owners?lastName=Davis` | 200 | 200 | match |
-| 103 | list page 3 after all inserts | `GET /owners?lastName=&page=3` | 200 | 200 | match |
-| 104 | list page 4 is out of bounds | `GET /owners?lastName=&page=4` | 302 | 302 | match |
-| 105 | processUpdateOwnerFormSuccess | `POST /owners/11/edit` | 302 | 302 | match |
-| 106 | flash: "Owner Values Updated" | `GET /owners/11` | 200 | 200 | match |
-| 107 | processUpdateOwnerFormUnchangedSuccess | `POST /owners/11/edit` | 302 | 302 | match |
-| 108 | update: owner 11 unchanged | `GET /owners/11/edit` | 200 | 200 | match |
-| 109 | processUpdateOwnerFormHasErrors | `POST /owners/11/edit` | 200 | 200 | match |
-| 110 | update: partial form only changes given fields | `POST /owners/12/edit` | 302 | 302 | match |
-| 111 | update: owner 12 after partial update | `GET /owners/12` | 200 | 200 | match |
-| 112 | update: id in the form is ignored (no id mismatch possible) | `POST /owners/3/edit` | 302 | 302 | match |
-| 113 | update: owner 3 updated, owner 4 untouched | `GET /owners/3` | 200 | 200 | match |
-| 114 | update: owner 4 | `GET /owners/4` | 200 | 200 | match |
-| 115 | update: via hex id redirects to raw path variable | `POST /owners/0x5/edit` | 302 | 302 | match |
-| 116 | update: flash on the raw path | `GET /owners/0x5` | 200 | 200 | match |
-| 117 | update: owner with pets keeps pets | `GET /owners/5` | 200 | 200 | match |
-| 118 | update: unknown owner -> 500 | `POST /owners/999/edit` | 500 | 500 | match |
-| 119 | update: non-numeric id -> 400 | `POST /owners/abc/edit` | 400 | 400 | match |
-| 120 | update: lang=ja validation errors | `POST /owners/1/edit?lang=ja` | 200 | 200 | match |
-| 121 | final state: list page 1 | `GET /owners?lastName=&page=1` | 200 | 200 | match |
-| 122 | final state: list page 2 | `GET /owners?lastName=&page=2` | 200 | 200 | match |
-| 123 | final state: list page 3 | `GET /owners?lastName=&page=3` | 200 | 200 | match |
-| 124 | final state: owner 11 | `GET /owners/11` | 200 | 200 | match |
-| 125 | final state: owner 12 | `GET /owners/12` | 200 | 200 | match |
-| 126 | final state: owner 13 | `GET /owners/13` | 200 | 200 | match |
-| 127 | final state: owner 14 | `GET /owners/14` | 200 | 200 | match |
-| 128 | final state: owner 15 | `GET /owners/15` | 200 | 200 | match |
-| 129 | database state: owners, pets, visits rows are identical | `SQL dump` | 15 | 15 | match |
+| 101 | search lowercase non-ASCII "ü" | `GET /owners?lastName=%C3%BC` | 302 | 302 | match |
+| 102 | create owner 15 "Davis" (third Davis) | `POST /owners/new` | 302 | 302 | match |
+| 103 | search Davis now lists 3 | `GET /owners?lastName=Davis` | 200 | 200 | match |
+| 104 | list page 3 after all inserts | `GET /owners?lastName=&page=3` | 200 | 200 | match |
+| 105 | list page 4 is out of bounds | `GET /owners?lastName=&page=4` | 302 | 302 | match |
+| 106 | processUpdateOwnerFormSuccess | `POST /owners/11/edit` | 302 | 302 | match |
+| 107 | flash: "Owner Values Updated" | `GET /owners/11` | 200 | 200 | match |
+| 108 | processUpdateOwnerFormUnchangedSuccess | `POST /owners/11/edit` | 302 | 302 | match |
+| 109 | update: owner 11 unchanged | `GET /owners/11/edit` | 200 | 200 | match |
+| 110 | processUpdateOwnerFormHasErrors | `POST /owners/11/edit` | 200 | 200 | match |
+| 111 | update: partial form only changes given fields | `POST /owners/12/edit` | 302 | 302 | match |
+| 112 | update: owner 12 after partial update | `GET /owners/12` | 200 | 200 | match |
+| 113 | update: id in the form is ignored (no id mismatch possible) | `POST /owners/3/edit` | 302 | 302 | match |
+| 114 | update: owner 3 updated, owner 4 untouched | `GET /owners/3` | 200 | 200 | match |
+| 115 | update: owner 4 | `GET /owners/4` | 200 | 200 | match |
+| 116 | update: via hex id redirects to raw path variable | `POST /owners/0x5/edit` | 302 | 302 | match |
+| 117 | update: flash on the raw path | `GET /owners/0x5` | 200 | 200 | match |
+| 118 | update: owner with pets keeps pets | `GET /owners/5` | 200 | 200 | match |
+| 119 | update: unknown owner -> 500 | `POST /owners/999/edit` | 500 | 500 | match |
+| 120 | update: non-numeric id -> 400 | `POST /owners/abc/edit` | 400 | 400 | match |
+| 121 | update: lang=ja validation errors | `POST /owners/1/edit?lang=ja` | 200 | 200 | match |
+| 122 | final state: list page 1 | `GET /owners?lastName=&page=1` | 200 | 200 | match |
+| 123 | final state: list page 2 | `GET /owners?lastName=&page=2` | 200 | 200 | match |
+| 124 | final state: list page 3 | `GET /owners?lastName=&page=3` | 200 | 200 | match |
+| 125 | final state: owner 11 | `GET /owners/11` | 200 | 200 | match |
+| 126 | final state: owner 12 | `GET /owners/12` | 200 | 200 | match |
+| 127 | final state: owner 13 | `GET /owners/13` | 200 | 200 | match |
+| 128 | final state: owner 14 | `GET /owners/14` | 200 | 200 | match |
+| 129 | final state: owner 15 | `GET /owners/15` | 200 | 200 | match |
+| 130 | database state: owners, pets, visits rows are identical | `SQL dump` | 15 | 15 | match |

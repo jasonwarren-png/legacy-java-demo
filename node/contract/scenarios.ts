@@ -118,6 +118,7 @@ export const scenarios: Scenario[] = [
 	{ name: 'create owner 14 with non-ASCII names', request: { method: 'POST', path: '/owners/new', form: validOwner({ firstName: 'Jürgen', lastName: 'Ünal', city: 'Zürich' }) } },
 	{ name: 'owner 14 details', request: { path: '/owners/14' } },
 	{ name: 'search exact-case "Ü"', request: { path: '/owners?lastName=%C3%9C' } },
+	{ name: 'search lowercase non-ASCII "ü"', request: { path: '/owners?lastName=%C3%BC' } },
 	{ name: 'create owner 15 "Davis" (third Davis)', request: { method: 'POST', path: '/owners/new', form: validOwner({ firstName: 'Dan', lastName: 'Davis' }) } },
 	{ name: 'search Davis now lists 3', request: { path: '/owners?lastName=Davis' } },
 	{ name: 'list page 3 after all inserts', request: { path: '/owners?lastName=&page=3' } },
