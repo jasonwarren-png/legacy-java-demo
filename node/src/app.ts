@@ -9,6 +9,7 @@ import type { Db } from './db/database.js';
 import { OwnerRepository } from './owner/ownerRepository.js';
 import { ownerRoutes } from './owner/ownerRoutes.js';
 import { errorHandler, notFoundHandler } from './web/errorHandling.js';
+import { isProxiedToLegacy } from './web/legacyProxy.js';
 import { IdleTimeoutMemoryStore } from './web/sessionStore.js';
 import { flashMiddleware, localeMiddleware, stripMatrixParams } from './web/view.js';
 
@@ -54,8 +55,13 @@ export function createApp(config: Config, db: Db, deps: AppDependencies = {}): E
 	app.use(ownerRoutes(deps.ownerRepository ?? new OwnerRepository(db)));
 
 	if (config.legacyUpstreamUrl) {
-		// Strangler pattern: everything not ported yet is served by the Spring app.
-		app.use(createProxyMiddleware({ target: config.legacyUpstreamUrl, changeOrigin: false, xfwd: true }));
+		// Strangler pattern: everything not ported yet is served by the Spring app, except internal actuator endpoints.
+		app.use(createProxyMiddleware({
+			target: config.legacyUpstreamUrl,
+			changeOrigin: false,
+			xfwd: true,
+			pathFilter: (path) => isProxiedToLegacy(path),
+		}));
 	}
 	app.use(notFoundHandler);
 	app.use(errorHandler);

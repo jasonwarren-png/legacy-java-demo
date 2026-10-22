@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { createApp } from '../src/app.js';
 import { loadConfig } from '../src/config.js';
 import { createDb, initDb } from '../src/db/database.js';
+import { isProxiedToLegacy } from '../src/web/legacyProxy.js';
 import { testApp, type TestApp } from './support.js';
 
 describe('web layer', () => {
@@ -63,6 +64,19 @@ describe('web layer', () => {
 		expect((await request(t.app).get('/owners/').set('Accept', 'text/html')).status).toBe(404);
 	});
 
+	it('blocks actuator endpoints other than health and info, including encoded and traversal variants', () => {
+		for (const allowed of ['/', '/vets.html', '/owners/1/pets/new', '/actuator/health', '/actuator/health/liveness', '/actuator/info', '/actuator/info/']) {
+			expect(isProxiedToLegacy(allowed), allowed).toBe(true);
+		}
+		for (const blocked of [
+			'/actuator', '/actuator/', '/actuator/env', '/actuator/beans', '/actuator/heapdump', '/ACTUATOR/env',
+			'/actuator/health/../env', '/actuator/health/..%2fenv', '/%61ctuator/env', '//actuator/env', '/./actuator/env',
+			'/actuator;x=1/env', '/actuator/env;x=1', '/vets/../actuator/env', '/actuator/%65nv', '/actuator/infox', '/%zz',
+		]) {
+			expect(isProxiedToLegacy(blocked), blocked).toBe(false);
+		}
+	});
+
 	it('forwards unported routes, including form bodies, to the legacy app', async () => {
 		let received = '';
 		upstream = createServer((req, res) => {
@@ -82,5 +96,11 @@ describe('web layer', () => {
 		const res = await request(t.app).post('/owners/2/pets/new').type('form').send({ name: 'Rex', birthDate: '2020-01-01', type: 'dog' });
 		expect(res.status).toBe(302);
 		expect(received).toBe('POST /owners/2/pets/new name=Rex&birthDate=2020-01-01&type=dog');
+
+		received = '';
+		expect((await request(t.app).get('/actuator/env')).status).toBe(404);
+		expect(received).toBe('');
+		await request(t.app).get('/actuator/health');
+		expect(received).toBe('GET /actuator/health ');
 	});
 });
